@@ -1,0 +1,16 @@
+{
+  "name": "drcode-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing page de {Dr.Code}",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}

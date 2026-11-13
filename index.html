@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{Dr.Code} - Soluciones Digitales</title>
+  <meta name="description" content="{Dr.Code} - Creamos presencia digital profesional: páginas web, landing pages, carritos de compras, menús digitales, tarjetas de presentación y automatizaciones.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f6f5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e110f" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_EC">
+  <meta property="og:title" content="{Dr.Code} - Soluciones Digitales">
+  <meta property="og:description" content="Páginas web, landing pages, carritos de compras, menús digitales, tarjetas de presentación y automatizaciones para tu negocio.">
+  <meta property="og:image" content="assets/logo.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('drcode_theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+
+  <header>
+    <div class="header-inner">
+      <a href="#hero" class="logo" aria-label="{Dr.Code} — Inicio">
+        <span class="logo-braces">{</span><span class="logo-text">Dr</span><span class="logo-dot">.</span><span class="logo-text">Code</span><span class="logo-braces">}</span>
+      </a>
+      <button class="hamburger" aria-label="Menú de navegación" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="nav-menu" aria-label="Navegación principal">
+        <ul class="nav-menu">
+          <li><a href="#hero" class="nav-link active" aria-current="true">Inicio</a></li>
+          <li><a href="#servicios" class="nav-link">Servicios</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#contacto" class="nav-link">Contacto</a></li>
+          <li>
+            <a class="nav-link nav-cta" href="https://wa.me/593999806465?text=Hola%20%7BDr.Code%7D%2C%20quiero%20agendar%20una%20cita%20para%20conversar%20sobre%20mi%20proyecto." target="_blank" rel="noopener">
+              Agendar
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="hero" id="hero">
+      <div class="hero-logo">
+        <span class="logo-braces">{</span><span class="logo-text">Dr</span><span class="logo-dot">.</span><span class="logo-text">Code</span><span class="logo-braces">}</span>
+      </div>
+      <h1 class="hero-title">Soluciones Digitales para tu Negocio</h1>
+      <p class="hero-subtitle">Creamos presencia digital profesional. Páginas web, landings, carritos de compras, menús digitales, tarjetas de presentación y automatizaciones que impulsan tu negocio.</p>
+      <div class="hero-cta">
+        <a href="#servicios" class="btn btn-primary">Ver Servicios</a>
+        <a href="#contacto" class="btn btn-secondary">Contactar</a>
+      </div>
+    </section>
+
+    <section class="section section-small" id="servicios">
+      <div class="container">
+        <h2 class="section-title">Nuestros Servicios</h2>
+        <p class="section-lead">Soluciones digitales adaptadas a tus necesidades. Cada proyecto es único, por eso trabajamos para transformar tu visión en realidad.</p>
+
+        <div class="services-grid">
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/pagina-web.svg" alt="Vista previa de una página web" width="400" height="260">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-globe" aria-hidden="true"></i></span>
+              <h3 class="service-title">Páginas Web</h3>
+              <p class="service-desc">Sitios web profesionales con diseño responsivo, optimizados para SEO y conversión. Ideal para negocios que quieren presencia seria en internet.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="web">Solicitar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/landing.svg" alt="Vista previa de una landing page" width="400" height="260" loading="lazy">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i></span>
+              <h3 class="service-title">Landing Pages</h3>
+              <p class="service-desc">Páginas de aterrizaje enfocadas en conversión. Perfectas para campañas publicitarias, lanzamientos de productos o servicios específicos.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="landing">Solicitar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/carrito.svg" alt="Vista previa de un carrito de compras" width="400" height="260" loading="lazy">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i></span>
+              <h3 class="service-title">Carritos de Compras</h3>
+              <p class="service-desc">Tienda online que conecta directamente con WhatsApp. Tus clientes seleccionan productos y reciben el pedido listo para comprar.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="carrito">Solicitar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/menu.svg" alt="Vista previa de un menú digital" width="400" height="260" loading="lazy">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i></span>
+              <h3 class="service-title">Menús Digitales</h3>
+              <p class="service-desc">Menú interactivo accesible por código QR. Actualiza precios y platillos fácilmente. Ideal para restaurantes y cafeterías.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="menu">Solicitar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/tarjeta.svg" alt="Vista previa de una tarjeta de presentación digital" width="400" height="260" loading="lazy">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-credit-card" aria-hidden="true"></i></span>
+              <h3 class="service-title">Tarjetas de Presentación</h3>
+              <p class="service-desc">Tarjeta digital profesional que se comparte por QR o enlace. Incluye contacto, servicios y redes sociales en un solo lugar.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="tarjeta">Solicitar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card service-card service-card--detailed">
+            <div class="service-preview">
+              <img src="assets/previews/automatizacion.svg" alt="Vista previa de una automatización" width="400" height="260" loading="lazy">
+            </div>
+            <div class="service-body">
+              <span class="service-icon"><i class="fa-solid fa-robot" aria-hidden="true"></i></span>
+              <h3 class="service-title">Automatizaciones</h3>
+              <p class="service-desc">Automatizamos procesos de tu negocio: respuestas en WhatsApp, confirmación de citas, notificaciones y más flujos de trabajo.</p>
+              <div class="service-actions">
+                <button type="button" class="btn btn-primary" data-service="automatizacion">Solicitar</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-small" id="porque">
+      <div class="container">
+        <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <div class="why-grid">
+          <div class="card why-card">
+            <span class="why-icon"><i class="fa-solid fa-bolt" aria-hidden="true"></i></span>
+            <h3 class="why-title">Entrega Rápida</h3>
+            <p>Tu proyecto listo en tiempo récord sin comprometer la calidad.</p>
+          </div>
+          <div class="card why-card">
+            <span class="why-icon"><i class="fa-solid fa-gem" aria-hidden="true"></i></span>
+            <h3 class="why-title">Calidad Premium</h3>
+            <p>Cada detalle está diseñado para transmitir profesionalismo.</p>
+          </div>
+          <div class="card why-card">
+            <span class="why-icon"><i class="fa-solid fa-comment" aria-hidden="true"></i></span>
+            <h3 class="why-title">Atención Personal</h3>
+            <p>Comunicación directa y soluciones adaptadas a tu medida.</p>
+          </div>
+          <div class="card why-card">
+            <span class="why-icon"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></span>
+            <h3 class="why-title">Soporte Continuo</h3>
+            <p>Estamos aquí para ayudarte siempre que lo necesites.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-small" id="skills">
+      <div class="container">
+        <h2 class="section-title">Skills &amp; Herramientas</h2>
+        <p class="section-lead">Tecnologías que dominamos para crear soluciones de alto nivel.</p>
+        <div id="skills-carousel"></div>
+      </div>
+    </section>
+
+    <section class="section section-small" id="contacto">
+      <div class="container">
+        <div class="contact-section">
+          <h2 class="section-title">Contáctanos</h2>
+          <p class="section-lead">Cuéntanos sobre tu proyecto y te responderemos por WhatsApp a la brevedad.</p>
+
+          <form class="contact-form" id="contactForm" novalidate>
+            <div class="form-group">
+              <label for="name">Nombre <span class="form-required">*</span></label>
+              <input type="text" id="name" name="name" required placeholder="Tu nombre completo" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email <span class="form-required">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="tu@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="phone">Teléfono <span class="form-required">*</span></label>
+              <input type="tel" id="phone" name="phone" required placeholder="+593 XX XXX XXXX" autocomplete="tel">
+            </div>
+            <div class="form-group">
+              <label for="service">Servicio</label>
+              <select id="service" name="service">
+                <option value="">Selecciona un servicio</option>
+                <option value="web">Página Web</option>
+                <option value="landing">Landing Page</option>
+                <option value="carrito">Carrito de Compras</option>
+                <option value="menu">Menú Digital</option>
+                <option value="tarjeta">Tarjeta de Presentación</option>
+                <option value="automatizacion">Automatización</option>
+                <option value="agendamiento">Agendamiento de Cita</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Mensaje</label>
+              <textarea id="message" name="message" placeholder="Cuéntanos sobre tu proyecto..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Enviar por WhatsApp
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-small cta-final">
+      <div class="container">
+        <h2>¿Listo para empezar?</h2>
+        <p>Agenda una consulta sin compromiso y conversemos sobre tu proyecto.</p>
+        <a class="btn btn-primary" href="https://wa.me/593999806465?text=Hola%20%7BDr.Code%7D%2C%20quiero%20agendar%20una%20cita%20para%20conversar%20sobre%20mi%20proyecto." target="_blank" rel="noopener">
+          Agendar Cita
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="logo-braces">{</span><span class="logo-text">Dr</span><span class="logo-dot">.</span><span class="logo-text">Code</span><span class="logo-braces">}</span>
+      </div>
+      <p class="footer-copy">Todos los derechos reservados &copy; <span id="footerYear">2026</span> {Dr.Code}</p>
+      <div class="social-links">
+        <a class="social-link" href="mailto:jordy.mh_1994@hotmail.com" aria-label="Enviar un correo" title="Email">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.2-8 5-8-5V6l8 5 8-5v2.2z"/></svg>
+        </a>
+        <a class="social-link" href="https://idroj001.github.io/catalogo-drcode/" target="_blank" rel="noopener" aria-label="Ver catálogo" title="Catálogo">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/canvas.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
