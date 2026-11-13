@@ -8,7 +8,8 @@ Landing de una sola página para {Dr.Code}. Header/footer inline en `index.html`
 
 - Tests: `cd landing && npm test` (Playwright en `127.0.0.1:4174`, `workers: 1`). Primera vez: `npm install` + `npx playwright install chromium`.
 - Deploy: GitHub Pages desde la raíz de `main` → https://idroj001.github.io/DrCode-landing/ (repo remoto `Idroj001/DrCode-landing`).
-- Enlaces entre sitios absolutos a las URLs de GitHub Pages; nunca relativos.
+- Enlaces entre sitios absolutos a las URLs de GitHub Pages; nunca relativos. Salidas de este sitio: footer social → catalogo-drcode; CTA "Agendar" → wa.me. `web` y `catalogo` enlazan hacia aquí como "Landing" en su nav.
+- Servicios: solo botón "Solicitar" (abre el formulario pre-seleccionado). No tiene enlaces "Ver demo" — los demos de `web` que tienen repos reales apuntan directamente a ellos.
 
 ## Acoplamientos que se rompen fácil
 
