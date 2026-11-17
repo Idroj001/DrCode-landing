@@ -8,6 +8,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let drops = [];
 let animId = null;
 let gradient = null;
+let lastFrame = 0;
 
 function isDark() {
   return document.documentElement.getAttribute('data-theme') === 'dark';
@@ -35,7 +36,15 @@ function sizeCanvas() {
   );
 }
 
-function draw() {
+function draw(timestamp) {
+  animId = requestAnimationFrame(draw);
+
+  // Techo de framerate: 30fps en escritorio, 24fps en pantallas chicas.
+  // El efecto visual no cambia apreciablemente y ahorra batería/CPU en móvil.
+  const interval = 1000 / (window.innerWidth < 768 ? 24 : 30);
+  if (timestamp - lastFrame < interval) return;
+  lastFrame = timestamp;
+
   ctx.fillStyle = trailColor();
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -54,8 +63,6 @@ function draw() {
       drops[i] = 0;
     }
   }
-
-  animId = requestAnimationFrame(draw);
 }
 
 function stop() {
@@ -71,7 +78,10 @@ function start() {
     stop();
     return;
   }
-  if (!animId) draw();
+  if (!animId) {
+    lastFrame = 0;
+    animId = requestAnimationFrame(draw);
+  }
 }
 
 if (canvas) {

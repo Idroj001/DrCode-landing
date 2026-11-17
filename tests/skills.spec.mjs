@@ -44,4 +44,21 @@ test.describe('carrusel de skills', () => {
     await page.clock.fastForward(4000);
     await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('HTML5');
   });
+
+  test('el botón de pausa detiene y reanuda el carrusel', async ({ page }) => {
+    await page.clock.install();
+    await gotoReady(page);
+
+    const toggle = page.locator('.carousel-toggle');
+    await expect(toggle).toHaveAttribute('aria-label', 'Pausar carrusel');
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Reproducir carrusel');
+    await page.clock.fastForward(8000);
+    await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('HTML5');
+
+    await toggle.click();
+    await page.clock.fastForward(3600);
+    await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('CSS3');
+  });
 });

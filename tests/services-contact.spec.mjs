@@ -4,7 +4,9 @@ test.describe('servicios', () => {
   test('hay seis servicios con vista previa', async ({ page }) => {
     await gotoReady(page);
     await expect(page.locator('.service-card--detailed')).toHaveCount(6);
-    await expect(page.locator('.service-preview img')).toHaveCount(6);
+    // 6 de servicios + 3 de la sección de proyectos reales
+    await expect(page.locator('.service-preview img')).toHaveCount(9);
+    await expect(page.locator('.project-card')).toHaveCount(3);
   });
 
   test('Solicitar preselecciona el servicio y lleva al formulario', async ({ page }) => {

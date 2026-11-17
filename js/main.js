@@ -12,6 +12,11 @@ const SERVICE_LABELS = {
   otro: 'Otro'
 };
 
+const CAROUSEL_ICONS = {
+  pause: '<svg viewBox="0 0 320 512" aria-hidden="true" focusable="false"><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"/></svg>',
+  play: '<svg viewBox="0 0 384 512" aria-hidden="true" focusable="false"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg>'
+};
+
 /* ---------------------------------------------------------------------------
    Tema claro / oscuro
    --------------------------------------------------------------------------- */
@@ -174,7 +179,7 @@ function initScrollSpy() {
     links.forEach(link => {
       const isActive = link.getAttribute('href') === `#${id}`;
       link.classList.toggle('active', isActive);
-      if (isActive) link.setAttribute('aria-current', 'true');
+      if (isActive) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
   };
@@ -232,6 +237,8 @@ function initSkillsCarousel() {
   const dots = container.querySelectorAll('.carousel-dot');
   let current = 0;
   let interval = null;
+  let paused = false;
+  let hovering = false;
 
   function goTo(index) {
     if (index === current) return;
@@ -260,26 +267,65 @@ function initSkillsCarousel() {
     interval = null;
   }
 
-  container.addEventListener('mouseenter', stop);
-  container.addEventListener('mouseleave', start);
-  container.addEventListener('focusin', stop);
+  // Control de pausa visible (WCAG 2.2.2): el autoplay puede detenerse sin hover,
+  // importante en táctil donde no existe hover.
+  const toggleBtn = document.createElement('button');
+  toggleBtn.type = 'button';
+  toggleBtn.className = 'carousel-toggle';
+  container.querySelector('.carousel-dots').prepend(toggleBtn);
+
+  function updateToggle() {
+    const running = !paused && !hovering;
+    toggleBtn.innerHTML = running ? CAROUSEL_ICONS.pause : CAROUSEL_ICONS.play;
+    toggleBtn.setAttribute('aria-label', running ? 'Pausar carrusel' : 'Reproducir carrusel');
+    toggleBtn.setAttribute('aria-pressed', String(running));
+  }
+
+  // Única fuente de verdad: respeta pausa manual, hover/focus y pestaña oculta.
+  function sync() {
+    if (paused || hovering || document.hidden) stop();
+    else start();
+    updateToggle();
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    paused = !paused;
+    // Un "play" explícito gana sobre el hover/focus actual (el puntero suele
+    // seguir sobre el carrusel al hacer clic); se recupera al salir y volver.
+    if (!paused) hovering = false;
+    sync();
+  });
+
+  container.addEventListener('mouseenter', () => {
+    hovering = true;
+    sync();
+  });
+  container.addEventListener('mouseleave', () => {
+    hovering = false;
+    sync();
+  });
+  container.addEventListener('focusin', (e) => {
+    if (e.target === toggleBtn) return;
+    hovering = true;
+    sync();
+  });
   container.addEventListener('focusout', (e) => {
-    if (!container.contains(e.relatedTarget)) start();
+    if (!container.contains(e.relatedTarget)) {
+      hovering = false;
+      sync();
+    }
   });
 
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
       goTo(index);
-      start();
+      sync();
     });
   });
 
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
-    else start();
-  });
+  document.addEventListener('visibilitychange', sync);
 
-  start();
+  sync();
 }
 
 /* ---------------------------------------------------------------------------
@@ -396,7 +442,16 @@ function initContactForm() {
     ].join('\n');
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank', 'noopener');
+    // Si el navegador bloquea el popup, window.open devuelve null: abrimos en
+    // la misma pestaña para no perder la solicitud.
+    const win = window.open(url, '_blank');
+    if (win) {
+      win.opener = null;
+    } else {
+      showToast('Tu navegador bloqueó la ventana emergente; abriendo WhatsApp aquí...');
+      window.location.href = url;
+      return;
+    }
     showToast('Abriendo WhatsApp con tu solicitud...');
 
     if (submitBtn) {

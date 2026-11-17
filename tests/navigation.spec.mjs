@@ -28,7 +28,7 @@ test.describe('navegación', () => {
 
     await page.locator('#skills').scrollIntoViewIfNeeded();
     await expect(page.locator('.nav-link[href="#skills"]')).toHaveClass(/active/);
-    await expect(page.locator('.nav-link[href="#skills"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('.nav-link[href="#skills"]')).toHaveAttribute('aria-current', 'page');
   });
 
   test('el CTA de agendar apunta a WhatsApp con mensaje', async ({ page }) => {

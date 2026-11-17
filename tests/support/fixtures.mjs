@@ -11,9 +11,11 @@ export const test = base.extend({
 
     await page.addInitScript(() => {
       window.__openedUrls = [];
+      // Devuelve un objeto truthy como un navegador real que no bloquea el
+      // popup (el código de la página usa el retorno para decidir fallback).
       window.open = (url) => {
         window.__openedUrls.push(String(url));
-        return null;
+        return {};
       };
     });
 
