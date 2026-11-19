@@ -56,6 +56,74 @@ test.describe('estructura y tema', () => {
     await expect(catalog).toHaveAttribute('rel', 'noopener');
   });
 
+  test('las ocho tarjetas tienen borde luminoso animado', async ({ page }) => {
+    await gotoReady(page);
+    await expect(page.locator('.term-panel, .card')).toHaveCount(8);
+
+    for (const selector of ['.term-panel', '.card']) {
+      const shine = await page.locator(selector).first().evaluate(el => {
+        const style = getComputedStyle(el, '::before');
+        return {
+          animation: style.animationName,
+          duration: style.animationDuration,
+          background: style.backgroundImage,
+          mask: style.maskComposite || style.webkitMaskComposite,
+        };
+      });
+      expect(shine.animation).toBe('card-shine');
+      expect(shine.duration).toBe('4.5s');
+      expect(shine.background).toContain('conic-gradient');
+      expect(shine.mask).toMatch(/exclude|xor/);
+    }
+  });
+
+  test('los campos del formulario tienen borde luminoso, no la tarjeta', async ({ page }) => {
+    await gotoReady(page);
+    await expect(page.locator('.field-frame')).toHaveCount(5);
+
+    const field = await page.locator('.field-frame').first().evaluate(el => {
+      const style = getComputedStyle(el, '::before');
+      return {
+        animation: style.animationName,
+        background: style.backgroundImage,
+        mask: style.maskComposite || style.webkitMaskComposite,
+      };
+    });
+    expect(field.animation).toBe('card-shine');
+    expect(field.background).toContain('conic-gradient');
+    expect(field.mask).toMatch(/exclude|xor/);
+
+    const formBefore = await page.locator('.contact-form').evaluate(el =>
+      getComputedStyle(el, '::before').content);
+    expect(formBefore).toBe('none');
+  });
+
+  test('los títulos usan el verde principal', async ({ page }) => {
+    await gotoReady(page);
+    const titles = page.locator('.hero-title, .section-title');
+    await expect(titles).toHaveCount(7);
+
+    const colors = await titles.evaluateAll(els =>
+      els.map(el => getComputedStyle(el).color));
+    for (const color of colors) expect(color).toBe('rgb(0, 102, 63)');
+
+    await page.locator('.theme-toggle-float').click();
+    const darkColor = await page.locator('.hero-title').evaluate(el =>
+      getComputedStyle(el).color);
+    expect(darkColor).toBe('rgb(57, 255, 117)');
+  });
+
+  test('el borde luminoso se detiene con prefers-reduced-motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await gotoReady(page);
+
+    for (const selector of ['.term-panel', '.card', '.field-frame']) {
+      const animation = await page.locator(selector).first().evaluate(el =>
+        getComputedStyle(el, '::before').animationName);
+      expect(animation).toBe('none');
+    }
+  });
+
   test('los flotantes se detienen antes del footer', async ({ page }) => {
     await gotoReady(page);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

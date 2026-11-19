@@ -2,13 +2,17 @@ const WHATSAPP_NUMBER = '593999806465';
 const THEME_KEY = 'drcode_theme';
 
 const SERVICE_LABELS = {
-  web: 'Página Web',
-  landing: 'Landing Page',
-  carrito: 'Carrito de Compras',
-  menu: 'Menú Digital',
-  tarjeta: 'Tarjeta de Presentación',
-  automatizacion: 'Automatización',
-  agendamiento: 'Agendamiento de Cita',
+  landing: 'Landing page',
+  web: 'Web corporativa',
+  catalogo: 'Catálogo WhatsApp',
+  tarjeta: 'Tarjeta digital',
+  menu: 'Menú digital',
+  estudios: 'Web de estudios',
+  finanzas: 'Finanzas personales',
+  gestion: 'Gestión profesional',
+  dashboard: 'Dashboard con datos vivos',
+  chatbot: 'Chatbot WhatsApp',
+  automatizaciones: 'Automatizaciones',
   otro: 'Otro'
 };
 
@@ -194,6 +198,57 @@ function initScrollSpy() {
 }
 
 /* ---------------------------------------------------------------------------
+   Detalles de servicios
+   --------------------------------------------------------------------------- */
+
+function initServiceToggles() {
+  const toggles = document.querySelectorAll('.term-toggle');
+  if (!toggles.length) return;
+
+  toggles.forEach(toggle => {
+    const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+    const sign = toggle.querySelector('span');
+    const service = toggle.dataset.service || 'este servicio';
+    if (!panel || !sign) return;
+
+    toggle.addEventListener('click', () => {
+      const willOpen = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(willOpen));
+      toggle.setAttribute('aria-label', `${willOpen ? 'Ocultar' : 'Ver'} detalles de ${service}`);
+      sign.textContent = willOpen ? '-' : '+';
+      panel.hidden = !willOpen;
+    });
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   Capturas de trabajos (escritorio / móvil)
+   --------------------------------------------------------------------------- */
+
+function initWorkShots() {
+  const cards = document.querySelectorAll('.work-card');
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    const buttons = Array.from(card.querySelectorAll('.work-switch-btn'));
+    const frames = Array.from(card.querySelectorAll('.work-frame'));
+    if (!buttons.length || !frames.length) return;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const view = button.dataset.view;
+        buttons.forEach(other => {
+          other.setAttribute('aria-pressed', String(other === button));
+        });
+        frames.forEach(frame => {
+          frame.hidden = frame.dataset.view !== view;
+        });
+      });
+    });
+  });
+}
+
+/* ---------------------------------------------------------------------------
    Carrusel de skills
    --------------------------------------------------------------------------- */
 
@@ -329,33 +384,41 @@ function initSkillsCarousel() {
 }
 
 /* ---------------------------------------------------------------------------
-   Solicitud de servicio
-   --------------------------------------------------------------------------- */
-
-function requestService(slug) {
-  const select = document.getElementById('service');
-  if (select && SERVICE_LABELS[slug]) {
-    select.value = slug;
-  }
-
-  const section = document.getElementById('contacto');
-  const nameField = document.getElementById('name');
-  if (section && nameField) {
-    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    section.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
-    nameField.focus({ preventScroll: true });
-  }
-}
-
-function initServiceButtons() {
-  document.querySelectorAll('[data-service]').forEach(btn => {
-    btn.addEventListener('click', () => requestService(btn.dataset.service));
-  });
-}
-
-/* ---------------------------------------------------------------------------
    Validación y envío del formulario
    --------------------------------------------------------------------------- */
+
+/* Mensajes de validación en español. Los campos sin entrada propia caen en
+   un texto genérico; el navegador ya marca qué restricción falló. */
+const FIELD_MESSAGES = {
+  name: 'Escribe tu nombre para poder responderte.',
+  email: 'Escribe un correo válido, por ejemplo tu@email.com.',
+  phone: 'Usa solo números y los símbolos + - ( ).'
+};
+
+function fieldErrorMessage(field) {
+  const { validity } = field;
+  if (validity.valueMissing) {
+    return FIELD_MESSAGES[field.id] || 'Completa este campo.';
+  }
+  if (validity.typeMismatch || validity.patternMismatch) {
+    return FIELD_MESSAGES[field.id] || 'Revisa el formato de este campo.';
+  }
+  if (validity.tooLong || validity.tooShort) {
+    return FIELD_MESSAGES[field.id] || 'Revisa la longitud de este campo.';
+  }
+  return 'Revisa este campo antes de continuar.';
+}
+
+function clearFieldError(group) {
+  group.classList.remove('has-error');
+  const err = group.querySelector('.field-error');
+  if (err) err.remove();
+  const field = group.querySelector('input, select, textarea');
+  if (field) {
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+  }
+}
 
 function handleFieldError(e) {
   e.preventDefault();
@@ -363,24 +426,27 @@ function handleFieldError(e) {
   const group = field.closest('.form-group');
   if (!group) return;
   group.classList.add('has-error');
-  const existing = group.querySelector('.field-error');
-  if (existing) existing.remove();
-  const err = document.createElement('span');
-  err.className = 'field-error';
-  err.textContent = field.validationMessage;
-  err.setAttribute('role', 'alert');
-  group.appendChild(err);
+
+  let err = group.querySelector('.field-error');
+  if (!err) {
+    err = document.createElement('span');
+    err.className = 'field-error';
+    err.setAttribute('role', 'alert');
+    group.appendChild(err);
+  }
+
+  const errorId = `${field.id || 'campo'}-error`;
+  err.id = errorId;
+  err.textContent = fieldErrorMessage(field);
+  field.setAttribute('aria-invalid', 'true');
+  field.setAttribute('aria-describedby', errorId);
 }
 
 function handleFieldBlur(e) {
   const field = e.target;
   if (field.checkValidity()) {
     const group = field.closest('.form-group');
-    if (group) {
-      group.classList.remove('has-error');
-      const err = group.querySelector('.field-error');
-      if (err) err.remove();
-    }
+    if (group) clearFieldError(group);
   }
 }
 
@@ -389,9 +455,7 @@ function handleFieldInput(e) {
   const group = field.closest('.form-group');
   if (!group) return;
   if (group.classList.contains('has-error') && field.checkValidity()) {
-    group.classList.remove('has-error');
-    const err = group.querySelector('.field-error');
-    if (err) err.remove();
+    clearFieldError(group);
   }
 }
 
@@ -496,8 +560,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initFloatLift();
   initNavigation();
   initScrollSpy();
+  initServiceToggles();
+  initWorkShots();
   initSkillsCarousel();
-  initServiceButtons();
   initContactForm();
 
   const year = document.getElementById('footerYear');

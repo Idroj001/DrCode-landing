@@ -1,21 +1,87 @@
 import { test, expect, gotoReady, openedWhatsAppText } from './support/fixtures.mjs';
 
 test.describe('servicios', () => {
-  test('hay seis servicios con vista previa', async ({ page }) => {
+  test('cuatro paneles terminal con once servicios sin enlaces', async ({ page }) => {
     await gotoReady(page);
-    await expect(page.locator('.service-card--detailed')).toHaveCount(6);
-    // 6 de servicios + 3 de la sección de proyectos reales
-    await expect(page.locator('.service-preview img')).toHaveCount(9);
-    await expect(page.locator('.project-card')).toHaveCount(3);
+    await expect(page.locator('.term-panel')).toHaveCount(4);
+    await expect(page.locator('.term-panel--wide')).toHaveCount(2);
+    await expect(page.locator('.term-panel--single')).toHaveCount(2);
+    await expect(page.locator('.term-item')).toHaveCount(9);
+    await expect(page.locator('.term-price')).toHaveCount(11);
+    await expect(page.locator('.term-badge')).toHaveCount(4);
+
+    // Los servicios y los títulos no navegan: solo el botón final enlaza al catálogo
+    await expect(page.locator('.term-panels a')).toHaveCount(0);
+    const itemTags = await page.locator('.term-item').evaluateAll(els => els.map(el => el.tagName));
+    for (const tag of itemTags) expect(tag).toBe('DIV');
+    const titleTags = await page.locator('.term-caption-title').evaluateAll(els => els.map(el => el.tagName));
+    for (const tag of titleTags) expect(tag).toBe('SPAN');
   });
 
-  test('Solicitar preselecciona el servicio y lleva al formulario', async ({ page }) => {
+  test('cada línea muestra su precio y tarjeta-digital cuesta $20', async ({ page }) => {
     await gotoReady(page);
-    await page.locator('[data-service="menu"]').click();
+    const tarjeta = page.locator('.term-item').filter({ hasText: 'tarjeta-digital' });
+    await expect(tarjeta).toHaveCount(1);
+    await expect(tarjeta).toContainText('$20');
 
-    await expect(page.locator('#service')).toHaveValue('menu');
-    await expect(page.locator('#name')).toBeFocused();
-    await expect(page.locator('#contacto')).toBeInViewport({ ratio: 0.1 });
+    const prices = await page.locator('.term-price').allTextContents();
+    expect(prices).toHaveLength(11);
+    for (const price of prices) {
+      expect(price).toMatch(/^\$\d+$/);
+    }
+  });
+
+  test('cada servicio tiene un botón + que abre y minimiza sus detalles', async ({ page }) => {
+    await gotoReady(page);
+    await expect(page.locator('.term-toggle')).toHaveCount(11);
+    await expect(page.locator('.term-more')).toHaveCount(11);
+    await expect(page.locator('.term-more:visible')).toHaveCount(0);
+
+    const toggle = page.locator('.term-toggle[aria-controls="svc-landing"]');
+    const details = page.locator('#svc-landing');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(details).toBeHidden();
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(details).toBeVisible();
+    await expect(details).toContainText('Una sola página');
+    await expect(details).toContainText('Precio de lanzamiento');
+    await expect(details).not.toContainText('antes $');
+    await expect(details).toContainText('$20 base + extras');
+    await expect(details).toContainText('(1er extra gratis)');
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(details).toBeHidden();
+
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(details).toBeVisible();
+
+    const chatbot = page.locator('.term-toggle[aria-controls="svc-chatbot"]');
+    await chatbot.click();
+    await expect(page.locator('#svc-chatbot')).toBeVisible();
+    await expect(page.locator('#svc-chatbot')).toContainText('24 horas');
+  });
+
+  test('solo el botón final enlaza al catálogo', async ({ page }) => {
+    await gotoReady(page);
+    await expect(page.locator('.term-panels a')).toHaveCount(0);
+
+    const cta = page.locator('.term-cta a');
+    await expect(cta).toHaveCount(1);
+    await expect(cta).toHaveAttribute('href', 'https://idroj001.github.io/catalogo-drcode/');
+    await expect(cta).toHaveText(/Ver precios y extras/);
+  });
+
+  test('el bloque de qué incluye el precio tiene cinco puntos', async ({ page }) => {
+    await gotoReady(page);
+    await expect(page.locator('.includes-title')).toHaveText('¿Qué incluye el precio?');
+    await expect(page.locator('.includes-list li')).toHaveCount(5);
+    await expect(page.locator('.includes-list')).toContainText('enviados a tu correo');
+    await expect(page.locator('.includes-list')).toContainText('sin mensualidades');
+    await expect(page.locator('.includes-list')).toContainText('Dominio propio opcional');
   });
 });
 
@@ -27,22 +93,48 @@ test.describe('contacto', () => {
     await expect(page.locator('.form-group.has-error').first()).toBeVisible();
     await expect(page.locator('.field-error').first()).toBeVisible();
     await expect(page.locator('#name')).toBeFocused();
+
+    // Mensaje en español y campo asociado al error para lectores de pantalla
+    await expect(page.locator('#name')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#name')).toHaveAttribute('aria-describedby', 'name-error');
+    await expect(page.locator('#name-error')).toHaveText(/Escribe tu nombre/);
+
+    // En error el destello verde se oculta para que mande el rojo
+    const shine = await page.locator('.form-group.has-error .field-frame').first().evaluate(el =>
+      getComputedStyle(el, '::before').display);
+    expect(shine).toBe('none');
+
+    await page.fill('#name', 'Ana Torres');
+    await expect(page.locator('#name')).not.toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('.field-error')).toHaveCount(0);
+  });
+
+  test('valida el correo y el teléfono con mensajes en español', async ({ page }) => {
+    await gotoReady(page);
+    await page.fill('#name', 'Ana Torres');
+    await page.fill('#email', 'no-es-un-correo');
+    await page.fill('#phone', 'abc');
+    await page.locator('#contactForm button[type="submit"]').click();
+
+    await expect(page.locator('#email-error')).toHaveText(/correo válido/);
+    await expect(page.locator('#phone-error')).toHaveText(/solo números/);
   });
 
   test('envía la solicitud a WhatsApp con el servicio elegido', async ({ page }) => {
     await gotoReady(page);
+    await expect(page.locator('#service option')).toHaveCount(13);
     await page.fill('#name', 'Ana Torres');
     await page.fill('#email', 'ana@example.com');
     await page.fill('#phone', '0999999999');
-    await page.selectOption('#service', 'web');
-    await page.fill('#message', 'Necesito una página web.');
+    await page.selectOption('#service', 'catalogo');
+    await page.fill('#message', 'Necesito un catálogo.');
     await page.locator('#contactForm button[type="submit"]').click();
 
     const text = await openedWhatsAppText(page);
     expect(text).toContain('*Nombre:* Ana Torres');
     expect(text).toContain('*Email:* ana@example.com');
-    expect(text).toContain('*Servicio:* Página Web');
-    expect(text).toContain('*Mensaje:* Necesito una página web.');
+    expect(text).toContain('*Servicio:* Catálogo WhatsApp');
+    expect(text).toContain('*Mensaje:* Necesito un catálogo.');
     await expect(page.locator('.toast')).toContainText('WhatsApp');
   });
 });
