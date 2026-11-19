@@ -607,10 +607,6 @@ header {
   margin: 0;
 }
 
-.term-more-promo {
-  color: var(--matrix-green);
-}
-
 .term-panel--single {
   display: flex;
   flex-direction: column;
@@ -690,8 +686,18 @@ header {
   white-space: nowrap;
 }
 
-.term-cta {
-  text-align: center;
+.term-price-old {
+  color: var(--text-faint);
+  font-size: 1rem;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  white-space: nowrap;
+}
+
+.term-price-arrow {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* ===== ¿Qué incluye el precio? ===== */
@@ -745,20 +751,7 @@ header {
 .work-card {
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 0.85rem;
-  backdrop-filter: blur(5px);
-  transition: background-color 0.3s ease, border-color 0.3s ease,
-    transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.work-card:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow-hover);
+  gap: 0.85rem;
 }
 
 .work-shot {
@@ -839,7 +832,19 @@ header {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
-  padding: 0.9rem 0.35rem 0.25rem;
+  padding: 0.95rem 1.1rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  backdrop-filter: blur(5px);
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.work-body:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .work-title {
@@ -949,14 +954,16 @@ header {
    el anillo del borde. --shine-angle se interpola con @property. */
 
 .term-panel,
-.card {
+.card,
+.work-body {
   position: relative;
   border-color: var(--card-border);
   box-shadow: 0 0 18px var(--card-glow);
 }
 
 .term-panel::before,
-.card::before {
+.card::before,
+.work-body::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -992,6 +999,31 @@ header {
 .term-panel:nth-child(4)::before,
 .card:nth-child(4)::before {
   animation-delay: -3.3s;
+}
+
+/* Trabajos: el barrido del marco de texto va más despacio (8s) y desfasado */
+.work-body::before {
+  animation-duration: 8s;
+}
+
+.work-card:nth-child(2) .work-body::before {
+  animation-delay: -1.3s;
+}
+
+.work-card:nth-child(3) .work-body::before {
+  animation-delay: -2.6s;
+}
+
+.work-card:nth-child(4) .work-body::before {
+  animation-delay: -3.9s;
+}
+
+.work-card:nth-child(5) .work-body::before {
+  animation-delay: -5.2s;
+}
+
+.work-card:nth-child(6) .work-body::before {
+  animation-delay: -6.5s;
 }
 
 @keyframes card-shine {
@@ -1550,6 +1582,10 @@ footer {
     font-size: 1.3rem;
   }
 
+  .work-body {
+    padding: 0.85rem 0.95rem 0.9rem;
+  }
+
   /* Espacio para que los flotantes no tapen el botón de envío */
   #contacto {
     padding-bottom: 6.5rem;
@@ -1629,6 +1665,24 @@ footer {
     height: 2rem;
   }
 
+  /* Sin guía punteada: el precio tachado necesita el ancho en móvil */
+  .term-leader {
+    display: none;
+  }
+
+  .term-name {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .term-item {
+    gap: 0.35rem;
+  }
+
+  .term-price-old {
+    font-size: 0.95rem;
+  }
+
   .term-more {
     margin-left: 0.4rem;
   }
@@ -1660,6 +1714,15 @@ footer {
   .term-caption {
     flex-wrap: wrap;
     gap: 0.4rem 0.75rem;
+  }
+
+  /* Más ancho útil para el nombre del servicio junto al precio tachado */
+  .term-panel {
+    padding: 1rem 1rem 1.25rem;
+  }
+
+  .term-item {
+    padding-right: 0.25rem;
   }
 
   .hero-cta {
@@ -1712,6 +1775,15 @@ footer {
 /* Los flotantes se detienen antes del footer en cualquier viewport;
    initFloatLift() fija su `bottom` por encima del borde del footer. */
 
+@media (max-width: 360px) {
+  /* En pantallas muy angostas el tachado se come el nombre: el badge ya
+     anuncia el 75% OFF, así que se oculta y queda solo el precio final. */
+  .term-price-old,
+  .term-price-arrow {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1725,6 +1797,7 @@ footer {
 
   .term-panel::before,
   .card::before,
+  .work-body::before,
   .field-frame::before {
     animation: none;
   }

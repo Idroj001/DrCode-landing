@@ -18,17 +18,29 @@ test.describe('servicios', () => {
     for (const tag of titleTags) expect(tag).toBe('SPAN');
   });
 
-  test('cada línea muestra su precio y tarjeta-digital cuesta $20', async ({ page }) => {
+  test('cada línea muestra el precio anterior tachado y el precio final', async ({ page }) => {
     await gotoReady(page);
     const tarjeta = page.locator('.term-item').filter({ hasText: 'tarjeta-digital' });
     await expect(tarjeta).toHaveCount(1);
     await expect(tarjeta).toContainText('$20');
+    await expect(tarjeta.locator('.term-price-old')).toHaveText('$80');
 
     const prices = await page.locator('.term-price').allTextContents();
     expect(prices).toHaveLength(11);
     for (const price of prices) {
       expect(price).toMatch(/^\$\d+$/);
     }
+
+    // 75% de descuento: el precio anterior siempre es 4x el final
+    const old = await page.locator('.term-price-old').allTextContents();
+    expect(old).toHaveLength(11);
+    old.forEach((text, index) => {
+      expect(Number(text.slice(1))).toBe(Number(prices[index].slice(1)) * 4);
+    });
+
+    const crossed = await page.locator('.term-price-old').first().evaluate(el =>
+      getComputedStyle(el).textDecorationLine);
+    expect(crossed).toBe('line-through');
   });
 
   test('cada servicio tiene un botón + que abre y minimiza sus detalles', async ({ page }) => {
@@ -46,10 +58,8 @@ test.describe('servicios', () => {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(details).toBeVisible();
     await expect(details).toContainText('Una sola página');
-    await expect(details).toContainText('Precio de lanzamiento');
-    await expect(details).not.toContainText('antes $');
-    await expect(details).toContainText('$20 base + extras');
-    await expect(details).toContainText('(1er extra gratis)');
+    await expect(details).toContainText('Precio fijo');
+    await expect(details).not.toContainText('extras');
 
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -65,14 +75,12 @@ test.describe('servicios', () => {
     await expect(page.locator('#svc-chatbot')).toContainText('24 horas');
   });
 
-  test('solo el botón final enlaza al catálogo', async ({ page }) => {
+  test('los servicios no tienen enlaces salientes', async ({ page }) => {
     await gotoReady(page);
     await expect(page.locator('.term-panels a')).toHaveCount(0);
-
-    const cta = page.locator('.term-cta a');
-    await expect(cta).toHaveCount(1);
-    await expect(cta).toHaveAttribute('href', 'https://idroj001.github.io/catalogo-drcode/');
-    await expect(cta).toHaveText(/Ver precios y extras/);
+    await expect(page.locator('#servicios a')).toHaveCount(0);
+    await expect(page.locator('.term-cta')).toHaveCount(0);
+    await expect(page.locator('.term-badge').first()).toHaveText('LANZAMIENTO 75% OFF');
   });
 
   test('el bloque de qué incluye el precio tiene cinco puntos', async ({ page }) => {
