@@ -18,6 +18,19 @@ test.describe('servicios', () => {
     for (const tag of titleTags) expect(tag).toBe('SPAN');
   });
 
+  test('en móvil los nombres de servicio se leen completos', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoReady(page);
+
+    const clipped = await page.locator('.term-name').evaluateAll(els =>
+      els.filter(el => el.scrollWidth > el.clientWidth + 1).map(el => el.textContent));
+    expect(clipped).toEqual([]);
+
+    // Se oculta la flecha para ganar ancho, pero el precio anterior sigue a la vista
+    await expect(page.locator('.term-price-old').first()).toBeVisible();
+    await expect(page.locator('.term-price-arrow').first()).toBeHidden();
+  });
+
   test('cada línea muestra el precio anterior tachado y el precio final', async ({ page }) => {
     await gotoReady(page);
     const tarjeta = page.locator('.term-item').filter({ hasText: 'tarjeta-digital' });

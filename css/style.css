@@ -740,12 +740,14 @@ header {
   fill: currentColor;
 }
 
-/* ===== Trabajos ===== */
+/* ===== Demostraciones ===== */
 
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
+  max-width: 900px;
+  margin-inline: auto;
 }
 
 .work-card {
@@ -754,89 +756,18 @@ header {
   gap: 0.85rem;
 }
 
-.work-shot {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  border-radius: 0.6rem;
-  overflow: hidden;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-}
-
-.work-frame {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.4rem;
-}
-
-.work-frame[hidden] {
-  display: none;
-}
-
-.work-frame img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 0.4rem;
-}
-
-.work-frame--movil img {
-  width: auto;
-  height: 100%;
-  object-fit: contain;
-  border: 2px solid var(--border-strong);
-  border-radius: 1rem;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-}
-
-.work-switch {
-  display: flex;
-  flex: none;
-  gap: 0.15rem;
-  padding: 0.15rem;
-  border-radius: 999px;
-  background: var(--chip);
-  border: 1px solid var(--border);
-}
-
-.work-switch-btn {
-  padding: 0.12rem 0.55rem;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.work-switch-btn[aria-pressed="true"] {
-  background: var(--green-accent);
-  color: var(--on-accent);
-}
-
-.work-switch-btn:focus-visible {
-  outline: 2px solid var(--green-neon);
-  outline-offset: 2px;
-}
-
 .work-body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.4rem;
   padding: 0.95rem 1.1rem 1rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
   backdrop-filter: blur(5px);
+  text-align: center;
   transition: background-color 0.3s ease, border-color 0.3s ease,
     box-shadow 0.3s ease;
 }
@@ -861,7 +792,7 @@ header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.5rem 0.75rem;
   width: 100%;
   min-width: 0;
@@ -887,12 +818,36 @@ header {
   line-height: 1.5;
 }
 
+.work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 1.1rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+
+.work-demo {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.65rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--green-text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
 .work-link {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: auto;
-  padding-top: 0.35rem;
   color: var(--green-text);
   font-size: 1rem;
   text-decoration: none;
@@ -909,6 +864,18 @@ header {
 .work-link:hover {
   color: var(--green-text-hover);
   border-bottom-color: currentColor;
+}
+
+.work-demo:hover {
+  border-color: var(--matrix-green);
+  background: var(--surface-hover);
+  color: var(--green-text-hover);
+}
+
+.work-link:focus-visible,
+.work-demo:focus-visible {
+  outline: 2px solid var(--green-neon);
+  outline-offset: 2px;
 }
 
 .work-link--muted {
@@ -928,6 +895,91 @@ header {
   font-size: 1rem;
   line-height: 1.5;
   text-align: center;
+}
+
+/* ===== Visor de capturas ===== */
+
+.work-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.work-modal[hidden] {
+  display: none;
+}
+
+body.work-modal-open {
+  overflow: hidden;
+}
+
+.work-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 8, 6, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.work-modal-dialog {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: min(92vw, 1040px);
+  max-height: 88vh;
+  outline: none;
+}
+
+.work-modal-close {
+  position: absolute;
+  top: -0.85rem;
+  right: -0.85rem;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--surface-strong);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.work-modal-close:hover {
+  background: var(--surface-hover);
+  border-color: var(--matrix-green);
+  color: var(--green-text);
+}
+
+.work-modal-close svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+  display: block;
+}
+
+.work-modal-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(92vw, 1040px);
+  max-height: 88vh;
+  border-radius: 0.6rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.work-modal-img--movil {
+  display: none;
 }
 
 /* Tarjetas genéricas */
@@ -1001,7 +1053,7 @@ header {
   animation-delay: -3.3s;
 }
 
-/* Trabajos: el barrido del marco de texto va más despacio (8s) y desfasado */
+/* Demostraciones: el barrido del marco de texto va más despacio (8s) y desfasado */
 .work-body::before {
   animation-duration: 8s;
 }
@@ -1080,7 +1132,7 @@ header {
 
 #skills-carousel {
   position: relative;
-  min-height: 50vh;
+  min-height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1569,6 +1621,60 @@ footer {
 
 /* ===== Responsive ===== */
 
+/* El nav horizontal no cabe con "Demostraciones" hasta ~900px:
+   logo y primer enlace quedaban pegados a 769px. */
+@media (max-width: 900px) {
+  /* El wrapper sale del flujo para que el logo y la hamburguesa queden en los
+     extremos; el <ul> conserva la animación de apertura. */
+  #nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-menu {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+    gap: 0.5rem;
+    background: var(--surface-strong);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--glass-shadow);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .nav-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav-link {
+    display: block;
+    text-align: center;
+  }
+
+  /* En el desplegable el subrayado ocupaba todo el ancho: el estado activo
+     se queda solo con el color. */
+  .nav-link::after {
+    display: none;
+  }
+
+  .nav-cta {
+    text-align: center;
+  }
+}
+
 @media (max-width: 768px) {
   .includes-list {
     grid-template-columns: 1fr;
@@ -1582,6 +1688,15 @@ footer {
     font-size: 1.3rem;
   }
 
+  /* En móvil el visor muestra la captura vertical */
+  .work-modal-img--pc {
+    display: none;
+  }
+
+  .work-modal-img--movil {
+    display: block;
+  }
+
   .work-body {
     padding: 0.85rem 0.95rem 0.9rem;
   }
@@ -1593,43 +1708,6 @@ footer {
 
   .faq-item summary {
     font-size: 1rem;
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
-  .nav-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--surface-strong);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--glass-shadow);
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-    gap: 0.5rem;
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-  }
-
-  .nav-menu.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .nav-link {
-    display: block;
-    text-align: center;
-  }
-
-  .nav-cta {
-    text-align: center;
   }
 
   .footer-inner {
@@ -1648,8 +1726,19 @@ footer {
     text-align: center;
   }
 
+  /* El hero llena la pantalla: la sección de servicios queda bajo el fold */
   .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 7rem);
+    min-height: calc(100dvh - 7rem);
     padding: 3rem 1rem;
+  }
+
+  .hero-cta {
+    width: 100%;
   }
 
   .term-panels {
@@ -1692,6 +1781,10 @@ footer {
     height: 140px;
   }
 
+  #skills-carousel {
+    min-height: 320px;
+  }
+
   .carousel-name {
     font-size: 1.6rem;
   }
@@ -1708,6 +1801,8 @@ footer {
   }
 
   .hero {
+    min-height: calc(100vh - 6rem);
+    min-height: calc(100dvh - 6rem);
     padding: 2rem 0.5rem;
   }
 
@@ -1723,6 +1818,28 @@ footer {
 
   .term-item {
     padding-right: 0.25rem;
+  }
+
+  /* Con el precio tachado visible los slugs se cortaban a 390px:
+     la flecha se omite y el nombre baja a 1rem. Si aun así no cabe (320px
+     o si VT323 no carga), el slug parte por sus guiones en vez de cortarse. */
+  .term-price-arrow {
+    display: none;
+  }
+
+  .term-name {
+    font-size: 1rem;
+    line-height: 1.15;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: break-word;
+  }
+
+  /* Con la captura vertical casi a ancho completo, la X va dentro. */
+  .work-modal-close {
+    top: 0.5rem;
+    right: 0.5rem;
   }
 
   .hero-cta {
@@ -1776,10 +1893,9 @@ footer {
    initFloatLift() fija su `bottom` por encima del borde del footer. */
 
 @media (max-width: 360px) {
-  /* En pantallas muy angostas el tachado se come el nombre: el badge ya
-     anuncia el 75% OFF, así que se oculta y queda solo el precio final. */
-  .term-price-old,
-  .term-price-arrow {
+  /* En pantallas muy angostas el precio anterior se come el nombre: el
+     badge ya anuncia el 75% OFF y queda solo el precio final. */
+  .term-price-old {
     display: none;
   }
 }

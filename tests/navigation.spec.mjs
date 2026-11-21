@@ -22,6 +22,19 @@ test.describe('navegación', () => {
     await expect(burger).toHaveAttribute('aria-expanded', 'false');
   });
 
+  test('a 800px el header usa el menú móvil y no se pisa con el logo', async ({ page }) => {
+    await page.setViewportSize({ width: 800, height: 900 });
+    await gotoReady(page);
+
+    const burger = page.locator('.hamburger');
+    await expect(burger).toBeVisible();
+    await expect(page.locator('.nav-menu')).toBeHidden();
+
+    await burger.click();
+    await expect(page.locator('.nav-menu')).toBeVisible();
+    await expect(burger).toHaveAttribute('aria-expanded', 'true');
+  });
+
   test('el scrollspy marca la sección visible', async ({ page }) => {
     await gotoReady(page);
     await expect(page.locator('.nav-link[href="#hero"]')).toHaveClass(/active/);

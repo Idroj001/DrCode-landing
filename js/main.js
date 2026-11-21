@@ -222,29 +222,86 @@ function initServiceToggles() {
 }
 
 /* ---------------------------------------------------------------------------
-   Capturas de trabajos (escritorio / móvil)
+   Visor de capturas de demostraciones ("Vista previa")
    --------------------------------------------------------------------------- */
 
-function initWorkShots() {
-  const cards = document.querySelectorAll('.work-card');
-  if (!cards.length) return;
+function initWorkDemos() {
+  const buttons = Array.from(document.querySelectorAll('.work-demo'));
+  const modal = document.getElementById('workModal');
+  if (!buttons.length || !modal) return;
 
-  cards.forEach(card => {
-    const buttons = Array.from(card.querySelectorAll('.work-switch-btn'));
-    const frames = Array.from(card.querySelectorAll('.work-frame'));
-    if (!buttons.length || !frames.length) return;
+  const dialog = modal.querySelector('.work-modal-dialog');
+  const backdrop = modal.querySelector('.work-modal-backdrop');
+  const closeBtn = modal.querySelector('.work-modal-close');
+  const imgPc = modal.querySelector('.work-modal-img--pc');
+  const imgMovil = modal.querySelector('.work-modal-img--movil');
 
-    buttons.forEach(button => {
-      button.addEventListener('click', () => {
-        const view = button.dataset.view;
-        buttons.forEach(other => {
-          other.setAttribute('aria-pressed', String(other === button));
-        });
-        frames.forEach(frame => {
-          frame.hidden = frame.dataset.view !== view;
-        });
-      });
+  let opener = null;
+
+  const focusables = () =>
+    Array.from(dialog.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])'));
+
+  const open = button => {
+    const title = button.dataset.title || 'Proyecto';
+    imgPc.src = button.dataset.shotPc;
+    imgPc.alt = `${title} en escritorio`;
+    imgMovil.src = button.dataset.shotMovil;
+    imgMovil.alt = `${title} en móvil`;
+    dialog.setAttribute('aria-label', `Vista previa: ${title}`);
+    opener = button;
+    button.setAttribute('aria-expanded', 'true');
+    modal.hidden = false;
+    document.body.classList.add('work-modal-open');
+    closeBtn.focus();
+  };
+
+  const close = () => {
+    modal.hidden = true;
+    document.body.classList.remove('work-modal-open');
+    imgPc.removeAttribute('src');
+    imgMovil.removeAttribute('src');
+    if (opener) {
+      opener.setAttribute('aria-expanded', 'false');
+      opener.focus();
+      opener = null;
+    }
+  };
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (button.getAttribute('aria-expanded') === 'true') close();
+      else open(button);
     });
+  });
+
+  backdrop.addEventListener('click', close);
+  closeBtn.addEventListener('click', close);
+
+  document.addEventListener('keydown', event => {
+    if (modal.hidden) return;
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const list = focusables();
+    if (!list.length) {
+      event.preventDefault();
+      dialog.focus();
+      return;
+    }
+    const first = list[0];
+    const last = list[list.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 }
 
@@ -290,10 +347,13 @@ function initSkillsCarousel() {
 
   const slides = container.querySelectorAll('.carousel-slide');
   const dots = container.querySelectorAll('.carousel-dot');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let current = 0;
   let interval = null;
-  let paused = false;
+  // Con movimiento reducido el carrusel arranca detenido; el botón permite verlo.
+  let paused = reduceMotion.matches;
   let hovering = false;
+  let visible = true;
 
   function goTo(index) {
     if (index === current) return;
@@ -336,9 +396,10 @@ function initSkillsCarousel() {
     toggleBtn.setAttribute('aria-pressed', String(running));
   }
 
-  // Única fuente de verdad: respeta pausa manual, hover/focus y pestaña oculta.
+  // Única fuente de verdad: respeta pausa manual, hover/focus, pestaña oculta
+  // y que la sección esté a la vista (no gasta CPU fuera de pantalla).
   function sync() {
-    if (paused || hovering || document.hidden) stop();
+    if (paused || hovering || document.hidden || !visible) stop();
     else start();
     updateToggle();
   }
@@ -379,6 +440,22 @@ function initSkillsCarousel() {
   });
 
   document.addEventListener('visibilitychange', sync);
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      sync();
+    }, { threshold: 0.15 }).observe(container);
+  }
+
+  if (typeof reduceMotion.addEventListener === 'function') {
+    reduceMotion.addEventListener('change', () => {
+      paused = reduceMotion.matches;
+      // Un cambio del sistema manda sobre el hover vigente.
+      if (!paused) hovering = false;
+      sync();
+    });
+  }
 
   sync();
 }
@@ -561,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initScrollSpy();
   initServiceToggles();
-  initWorkShots();
+  initWorkDemos();
   initSkillsCarousel();
   initContactForm();
 

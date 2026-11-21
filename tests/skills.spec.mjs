@@ -10,6 +10,9 @@ test.describe('carrusel de skills', () => {
     await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('HTML5');
     await expect(page.locator('.carousel-dot.active')).toHaveCount(1);
 
+    await page.locator('#skills').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(120);
+
     await page.clock.fastForward(3600);
     await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('CSS3');
 
@@ -22,6 +25,9 @@ test.describe('carrusel de skills', () => {
     await gotoReady(page);
 
     await expect(page.locator('.carousel-dot').nth(0)).toHaveClass(/active/);
+
+    await page.locator('#skills').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(120);
 
     await page.clock.fastForward(3600);
     await expect(page.locator('.carousel-dot').nth(0)).not.toHaveClass(/active/);
@@ -58,6 +64,27 @@ test.describe('carrusel de skills', () => {
     await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('HTML5');
 
     await toggle.click();
+    await page.clock.fastForward(3600);
+    await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('CSS3');
+  });
+
+  test('con movimiento reducido no autoavanza hasta pulsar play', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.install();
+    await gotoReady(page);
+
+    await page.locator('#skills').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(120);
+
+    const toggle = page.locator('.carousel-toggle');
+    await expect(toggle).toHaveAttribute('aria-label', 'Reproducir carrusel');
+
+    await page.clock.fastForward(8000);
+    await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('HTML5');
+
+    // Un play explícito sí lo pone en marcha
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Pausar carrusel');
     await page.clock.fastForward(3600);
     await expect(page.locator('.carousel-slide.active .carousel-name')).toHaveText('CSS3');
   });

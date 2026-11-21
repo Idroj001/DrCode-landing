@@ -1,4 +1,4 @@
-/* Genera las capturas de escritorio y móvil de la sección "Trabajos".
+/* Genera las capturas de escritorio y móvil de la sección "Demostraciones".
    Uso: node scripts/make-work-shots.mjs
    Levanta un servidor local por cada repo, captura con Chromium y reduce
    las imágenes a JPEG para no inflar el peso de la página. */
